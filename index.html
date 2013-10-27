@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Humanitarian population by Canadian provinces and territories, 2012</title>
+   <script src="http://d3js.org/d3.v3.min.js"></script>
+   <link rel="stylesheet" href="style.css">
+</head>
+	<body>
+		
+		<!-- http://stackoverflow.com/questions/13897534/add-names-of-the-states-to-a-map-in-d3-js --> 
+		
+		<article>
+			<div id="tooltip" >
+	        <p><span id="migrants" ></span></p>
+		</div>
+		</article>
+	
+		<script type="text/javascript">
+		
+			//Width and height of the canvas
+			var w = 500;
+			var h = 500;
+
+			//Define projection
+			var projection = d3.geo.mercator()
+				.scale([250])
+    			.translate([w*1.3,h*1.3])
+    			.precision(.1);
+
+			//Define path generator
+			var path = d3.geo.path()
+				.projection(projection);
+		
+			
+			//Create SVG element
+			var svg = d3.select("article")
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h);
+			
+			
+			
+			/* Load CSV data. 
+			 * Source: Citizenship and Immigration Canada. 
+			 * "Canada - Total entries of humanitarian population by province or territory and urban area"
+			 * http://data.gc.ca/data/en/dataset/86ff3e0e-bef4-4257-88ea-7fe5fdba3f5c
+			 * humanitarian-migrants.csv 2012 data figures for major cities. 
+			 */
+			d3.csv("migrants_by_region.csv", function(data) {
+			
+				/* Load in GeoJSON data for Canada*/
+				d3.json("canada.json", function(json) {
+					
+					
+				
+					//loop through the CSV
+					for (var i = 0; i < data.length; i ++){
+						
+						//get the province/region name
+						var provinceName = data[i].iso_3166_2;
+						
+						//get the number of migrants in that province/region
+						var numberOfMigrants = data[i].migrants;
+						
+						for(var j = 0; j < json.features.length; j++){
+							
+							if (json.features[j].properties.iso_3166_2 == provinceName){
+								
+								//make an entry into the JSON with the value of the # of migrants
+								json.features[j].properties.value = numberOfMigrants;
+								
+
+								//stop
+								break;
+							}	
+						
+								//draw the province or region 					
+								svg.selectAll("path")
+									.data(json.features)
+									.enter()
+									.append("path")
+									.attr("d", path)
+				   					.style("fill", "#1d5b85")
+				   					.classed("carolina", true)
+				   					
+				   					// on mouseover, how do I highlight the province or region that is being hovered over? 
+				   					.on("mouseover",function(d){
+		
+				          				}	
+				          			)
+				          				
+				          				
+				   				    //append the population to the province/region being drawn 	
+			          				.append("text")
+			          				.text(function(d){
+			          					return d.properties.name; 
+			          				}) 
+			          				//hide the text
+			          				.classed("hidden",true)
+						
+						}
+					
+		         }
+			});
+		});
+
+
+</script>
+</body>
