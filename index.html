@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <title>Humanitarian population by Canadian provinces and territories, 2012</title>
+  <meta name="author" content="Alison Benjamin" />
    <script src="http://d3js.org/d3.v3.min.js"></script>
    <link rel="stylesheet" href="style.css">
 </head>
 	<body>
 		<article>
-			<div id="tooltip" >
-	        <p><span id="migrants" ></span></p>
+			<div id="tooltip" class="hidden">
+	        <p><span id="migrants"></span></p>
 		</div>
 		</article>
 	
@@ -66,7 +67,6 @@
 								
 								//make an entry into the JSON with the value of the # of migrants
 								json.features[j].properties.value = numberOfMigrants;
-								
 
 								//stop
 								break;
@@ -78,23 +78,30 @@
 									.enter()
 									.append("path")
 									.attr("d", path)
-				   					.style("fill", "#1d5b85")
-				   					
-				   					// on mouseover, how do I highlight the province or region that is being hovered over? 
-				   					.on("mouseover",function(d){
-		
-				          				}	
-				          			)
+				   					.style("fill", "#1d5b85")	   					
+				   					.on("mouseover",function(d,i){	
+										d3.select(this)
+											.classed("highlight",true)
+										d3.select("#tooltip")
+											.classed("hidden",false)
+											.select("#migrants")
+											.append("text")
+											.classed("hidden",false)
+											.text(function(){
+												return d.properties.name + ", " + d.properties.value;
+											})
+				          			})
+				          			.on("mouseout", function(d,i){
+				          				d3.select(this)
+				          					.classed("highlight",false)	
+				          				d3.select("#tooltip")
+				          					.classed("hidden",true)	
+				          				d3.select("#migrants text")
+				          					.remove();
+				          					
 				          				
-				          				
-				   				    //append the population to the province/region being drawn 	
-			          				.append("text")
-			          				.text(function(d){
-			          					return d.properties.name; 
-			          				}) 
-			          				//hide the text
-			          				.classed("hidden",true)
-						
+				          			})
+				         
 						}
 					
 		         }
